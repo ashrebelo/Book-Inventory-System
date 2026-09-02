@@ -6,24 +6,6 @@ const mongoose = require('mongoose')
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Enable this to provide feedback on what routes are available if a call 404s. You'll also have to enable the function call in the handler at the last line. 
-// It's only meant to be helpful to our group, not intended for a real world deployment as it exposes all routes available.
-
-// This builds a readable list of every address this app can answer. When express routes are created express stores them internally as a stack of layers. 
-// This function searches that stack and the active routes, then turns each into a string and provides it to the route caller. This is only for our class project though, and is maybe not a good thing for all scenarios.
-
-// function listRoutes() {
-//   const stack = (app.router || app._router).stack;                      // Express 5 keeps routes on app.router, Express 4 used app._router
-//   return stack
-//     .filter((layer) => layer.route)                                     // drop helper functions, keep only entries that are genuine addresses
-//     .flatMap((layer) => Object.keys(layer.route.methods)                // one address can allow several actions, so give each action its own line
-//       .filter((method) => layer.route.methods[method])                  // an action counts only if it is switched on for that address
-//       .map((method) => `${method.toUpperCase()} ${layer.route.path}`)); // combine action and address into one readable string
-// }
-
-//This is meant to catch when a user makes a call to a route that doesn't exist at the time of the call
-
-
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('Successfully connected to MongoDB')).catch(err => console.error('MongoDB initial connection error:', err));
 
 app.get('/', (req, res) => {
