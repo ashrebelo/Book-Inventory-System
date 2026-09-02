@@ -23,15 +23,7 @@ const port = process.env.PORT || 3000;
 
 //This is meant to catch when a user makes a call to a route that doesn't exist at the time of the call
 
-app.use((req, res) => {
-  res.status(404).json({                                          // returns the 404 code as well as the following:
-    error: 'Route not found',                                     // feedback that the route wasn't found
-    message: `No route matches ${req.method} ${req.originalUrl}`, // a plain sentence repeating exactly what was asked for
-    method: req.method,                                           // the action attempted
-    path: req.originalUrl,                                        // the address typed, kept whole including anything after the ? mark
-//    availableRoutes: listRoutes()                                 // ***Enable this if you turn on the function above*** List every address that does work and is enabled at the time of the call
-  });
-});
+
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('Successfully connected to MongoDB')).catch(err => console.error('MongoDB initial connection error:', err));
 
 app.get('/', (req, res) => {
@@ -73,11 +65,6 @@ app.get("/books/:id", (req, res) => {
     res.json(book);
 });
 
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-});
-
-
 // GET /books - return every book from MongoDB
 app.get("/books", async (req, res) => {
   try {
@@ -87,4 +74,18 @@ app.get("/books", async (req, res) => {
     console.error("Error fetching books:", err);
     res.status(500).json({ error: "Failed to fetch books" });
   }
+});
+
+app.use((req, res) => {
+  res.status(404).json({                                          // returns the 404 code as well as the following:
+    error: 'Route not found',                                     // feedback that the route wasn't found
+    message: `No route matches ${req.method} ${req.originalUrl}`, // a plain sentence repeating exactly what was asked for
+    method: req.method,                                           // the action attempted
+    path: req.originalUrl,                                        // the address typed, kept whole including anything after the ? mark
+//    availableRoutes: listRoutes()                                 // ***Enable this if you turn on the function above*** List every address that does work and is enabled at the time of the call
+  });
+});
+
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
 });
