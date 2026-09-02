@@ -1,10 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose')
-
+const booksRoute = require('./routes/booksRoute');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use('/', booksRoute);
+
 
 // Enable this to provide feedback on what routes are available if a call 404s. You'll also have to enable the function call in the handler at the last line. 
 // It's only meant to be helpful to our group, not intended for a real world deployment as it exposes all routes available.
@@ -73,9 +76,7 @@ app.get("/books/:id", (req, res) => {
     res.json(book);
 });
 
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-});
+
 
 
 // GET /books - return every book from MongoDB
@@ -87,4 +88,9 @@ app.get("/books", async (req, res) => {
     console.error("Error fetching books:", err);
     res.status(500).json({ error: "Failed to fetch books" });
   }
+});
+
+
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
 });

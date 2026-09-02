@@ -5,3 +5,6 @@ const Book = require('../models/book')
 const bookController = require('../controllers/bookController')
 
 router.get('/books/:id', bookController.getBookById);
+router.post('/books', bookController.createBook);
+
+module.exports = router;
