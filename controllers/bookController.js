@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const book = require('../models/book');
+const Book = require('../models/book');
 
 const getBookById =  async (req, res) => {
     try {
@@ -34,6 +35,16 @@ const createBook = async (req, res) => {
 };
 
 
+//Task A: Getting all books - Sep-03 (Ivan R.):
+const getAllBooks = async (req,res)=>{
+    try{
+        const books = await Book.find({});
+        res.status(200).json(books);
+    }catch(error){
+        res.status(500).json({message:"Could not fetch books. Please try again"})
+    }
+};
 
 
-module.exports = {getBookById, createBook};
+
+module.exports = {getBookById, createBook,getAllBooks};
