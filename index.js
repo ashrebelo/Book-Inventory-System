@@ -1,10 +1,23 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose')
-
+const booksRoute = require('./routes/booksRoute');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+
+app.use('/', booksRoute);
+
+function listRoutes() {
+  const stack = (app.router || app._router).stack;                     
+  return stack
+    .filter((layer) => layer.route)                                   
+    .flatMap((layer) => Object.keys(layer.route.methods)                
+      .filter((method) => layer.route.methods[method])                  
+      .map((method) => `${method.toUpperCase()} ${layer.route.path}`)); 
+}
+
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('Successfully connected to MongoDB')).catch(err => console.error('MongoDB initial connection error:', err));
 
@@ -47,6 +60,8 @@ app.get("/books/:id", (req, res) => {
     res.json(book);
 });
 
+
+
 // GET /books - return every book from MongoDB
 app.get("/books", async (req, res) => {
   try {
@@ -58,15 +73,17 @@ app.get("/books", async (req, res) => {
   }
 });
 
+
 app.use((req, res) => {
-  res.status(404).json({                                          // returns the 404 code as well as the following:
-    error: 'Route not found',                                     // feedback that the route wasn't found
-    message: `No route matches ${req.method} ${req.originalUrl}`, // a plain sentence repeating exactly what was asked for
-    method: req.method,                                           // the action attempted
-    path: req.originalUrl,                                        // the address typed, kept whole including anything after the ? mark
-//    availableRoutes: listRoutes()                                 // ***Enable this if you turn on the function above*** List every address that does work and is enabled at the time of the call
+  res.status(404).json({                                         
+    error: 'Route not found',                                     
+    message: `No route matches ${req.method} ${req.originalUrl}`,
+    method: req.method,                                          
+    path: req.originalUrl,                                        
+    availableRoutes: listRoutes()                                 
   });
 });
+
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
