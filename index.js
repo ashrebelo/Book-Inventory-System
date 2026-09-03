@@ -7,6 +7,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 
+app.use(express.json()); 
+
+=======
 app.use('/', booksRoute);
 
 function listRoutes() {
@@ -20,6 +23,7 @@ function listRoutes() {
 
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('Successfully connected to MongoDB')).catch(err => console.error('MongoDB initial connection error:', err));
+
 
 app.get('/', (req, res) => {
     res.send('Hello');
@@ -69,6 +73,17 @@ app.get("/books/:id", async (req, res) => {
 });
 
 
+app.post("/books", async (req, res) => {
+    try {
+        const newBook = new Book(req.body); //come back to this incase they have dif name for the model
+        const savedBook = await newBook.save();
+        res.json(savedBook);
+    } catch (error) {
+        res.json({ message: "Could not add book" });
+    }
+});
+
+
 // GET /books - return every book from MongoDB
 app.get("/books", async (req, res) => {
   try {
@@ -90,6 +105,7 @@ app.use((req, res) => {
     availableRoutes: listRoutes()                                 
   });
 });
+
 
 
 app.listen(port, () => {
