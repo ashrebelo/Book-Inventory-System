@@ -1,10 +1,23 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose')
-
+const booksRoute = require('./routes/booksRoute');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+
+app.use('/', booksRoute);
+
+function listRoutes() {
+  const stack = (app.router || app._router).stack;                     
+  return stack
+    .filter((layer) => layer.route)                                   
+    .flatMap((layer) => Object.keys(layer.route.methods)                
+      .filter((method) => layer.route.methods[method])                  
+      .map((method) => `${method.toUpperCase()} ${layer.route.path}`)); 
+}
+
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('Successfully connected to MongoDB')).catch(err => console.error('MongoDB initial connection error:', err));
 
@@ -32,8 +45,6 @@ app.get('/test-db', (req, res) => {
     });
 });
 
-
-
 const Book = mongoose.models.Book || mongoose.model('Book', new mongoose.Schema({
     serial: String,
     tags: [String],
@@ -55,6 +66,29 @@ app.get("/books/:id", async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Invalid ID format or server error", error: error.message });
     }
+});
+
+
+// GET /books - return every book from MongoDB
+app.get("/books", async (req, res) => {
+  try {
+    const books = await Book.find({});
+    res.status(200).json(books);
+  } catch (err) {
+    console.error("Error fetching books:", err);
+    res.status(500).json({ error: "Failed to fetch books" });
+  }
+});
+
+
+app.use((req, res) => {
+  res.status(404).json({                                         
+    error: 'Route not found',                                     
+    message: `No route matches ${req.method} ${req.originalUrl}`,
+    method: req.method,                                          
+    path: req.originalUrl,                                        
+    availableRoutes: listRoutes()                                 
+  });
 });
 
 
