@@ -49,19 +49,27 @@ app.get('/test-db', (req, res) => {
     });
 });
 
+const Book = mongoose.models.Book || mongoose.model('Book', new mongoose.Schema({
+    serial: String,
+    tags: [String],
+    publishingCompany: String,
+    inventoryCount: Number,
+    unitsSold: Number
+}));
 
-app.get("/books/:id", (req, res) => {
-    const id = Number(req.params.id);
 
-    const book = books.find(book => book.id === id);
+app.get("/books/:id", async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
 
-    if (!book) {
-        return res.status(404).json({
-            message: "Book not found"
-        });
+        if (!book) {
+            return res.status(404).json({ message: "Book not found" });
+        }
+
+        res.json(book);
+    } catch (error) {
+        res.status(500).json({ message: "Invalid ID format or server error", error: error.message });
     }
-
-    res.json(book);
 });
 
 
@@ -76,7 +84,6 @@ app.post("/books", async (req, res) => {
 });
 
 
-=======
 // GET /books - return every book from MongoDB
 app.get("/books", async (req, res) => {
   try {
