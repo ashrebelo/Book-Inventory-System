@@ -4,7 +4,7 @@ const book = require('../models/book');
 
 const getBookById =  async (req, res) => {
     try {
-        const book = await Book.findById(req.params.id);
+        const book = await book.findById(req.params.id);
 
         // if no book was found
         if(!book) {
@@ -25,15 +25,24 @@ const getBookById =  async (req, res) => {
 
 const createBook = async (req, res) => {
     try {
-        const newBook = new Book(req.body);
+        const newBook = new book(req.body);
         const savedBook = await newBook.save();
-        res.json(savedBook);
+        res.status(200).json(savedBook);
     } catch (error) {
-        res.json({ message: "Could not add book" });
+        res.status(400).json({ message: "Could not add book" });
     }
 };
 
 
+//Task A: Getting all books - Sep-03 (Ivan R.):
+const getAllBooks = async (req,res)=>{
+    try{
+        const books = await Book.find({});
+        res.status(200).json(books);
+    }catch(error){
+        res.status(500).json({message:"Could not fetch books. Please try again"})
+    }
+};
 
 
-module.exports = {getBookById, createBook};
+module.exports = {getBookById, createBook,getAllBooks};
