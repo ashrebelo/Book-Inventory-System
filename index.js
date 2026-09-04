@@ -7,6 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 
+app.use(express.json()); // turn a JSON request body into req.body, without this every POST body arrives undefined
 app.use('/', booksRoute);
 
 function listRoutes() {
