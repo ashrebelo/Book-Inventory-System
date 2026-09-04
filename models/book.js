@@ -7,7 +7,8 @@ const bookSchema = new mongoose.Schema({
     },
     tags: {
         type: [String],
-        required: true
+        required: true,
+        default: undefined
     },
     publishingCompany: {
         type: String,
